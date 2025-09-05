@@ -45,11 +45,13 @@ describe("Data functions", () => {
       expect(newProgress).toBeLessThanOrEqual(1.0);
     });
 
-    it("should handle progress at 1.0", () => {
+    it("should reset progress when at 1.0", () => {
       const maxProgress = 1.0;
       const newProgress = updateProgress(maxProgress);
 
-      expect(newProgress).toBe(1.0);
+      // When progress is at 100%, it should reset to 10-30%
+      expect(newProgress).toBeGreaterThanOrEqual(0.1);
+      expect(newProgress).toBeLessThanOrEqual(0.3);
     });
   });
 

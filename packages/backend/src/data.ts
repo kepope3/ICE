@@ -1,6 +1,7 @@
 import { Song } from "./types";
+import * as fs from "fs";
+import * as path from "path";
 
-// Base song data
 export const baseSongs = [
   { id: 1, name: "Flowers", author: "Miley Cyrus" },
   { id: 2, name: "Anti-Hero", author: "Taylor Swift" },
@@ -14,12 +15,34 @@ export const baseSongs = [
   { id: 10, name: "Creepin'", author: "Metro Boomin, The Weeknd, 21 Savage" },
 ];
 
-// Initial progress values (as specified in requirements)
+const PROGRESS_FILE = path.join(__dirname, "progress.json");
+
 const initialProgress = [
   0.15, 0.27, 0.12, 0.38, 0.03, 0.1, 0.35, 0.58, 0.41, 0.32,
 ];
 
-// Create songs with initial progress
+const loadProgress = (): number[] => {
+  try {
+    if (fs.existsSync(PROGRESS_FILE)) {
+      const data = fs.readFileSync(PROGRESS_FILE, "utf8");
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : initialProgress;
+    }
+  } catch (error) {
+    console.warn("Failed to load progress file, using initial values:", error);
+  }
+  return [...initialProgress];
+};
+
+const saveProgress = (progress: number[]): void => {
+  try {
+    fs.writeFileSync(PROGRESS_FILE, JSON.stringify(progress, null, 2));
+  } catch (error) {
+    console.warn("Failed to save progress file:", error);
+  }
+};
+
+// Create songs with progress
 export const createSongsWithProgress = (progressValues: number[]): Song[] => {
   return baseSongs.map((song, index) => ({
     ...song,
@@ -28,17 +51,19 @@ export const createSongsWithProgress = (progressValues: number[]): Song[] => {
 };
 
 export const updateProgress = (currentProgress: number): number => {
-  // Generate a random increment to simulate progress changes
-  const increment = Math.random() * 0.04 + 0.01;
+  if (currentProgress >= 1.0) {
+    return Math.round((Math.random() * 0.2 + 0.1) * 100) / 100;
+  }
+
+  const increment = Math.random() * 0.07 + 0.01;
   const newProgress = currentProgress + increment;
 
-  // Cap at 1.0 (100%) and round to 2 decimal places
   return Math.min(Math.round(newProgress * 100) / 100, 1.0);
 };
 
 export const getCurrentSongs = (): Song[] => {
-  // In a real app, this would come from a database
-  // For now, we simulate progress by generating random values each time
-  const currentProgress = initialProgress.map(updateProgress);
+  let currentProgress = loadProgress();
+  currentProgress = currentProgress.map(updateProgress);
+  saveProgress(currentProgress);
   return createSongsWithProgress(currentProgress);
 };

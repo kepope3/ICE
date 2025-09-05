@@ -1,69 +1,29 @@
-# Royalty Processing Backend
+# Backend
 
-Express.js backend for the royalty processing system with TypeScript.
+Express.js API for the music royalty processing system.
 
 ## Features
 
-- **Single Endpoint**: `GET /api/songs` - Returns list of 10 songs with dynamic progress
-- **Dynamic Progress**: Progress values increment over time to simulate real calculation updates
-- **TypeScript**: Full type safety throughout
-- **Testing**: Jest test suite with comprehensive coverage
-- **CORS**: Enabled for frontend communication
+- Single endpoint: `GET /api/songs`
+- Dynamic progress simulation with persistence
+- Progress resets at 100% to simulate new cycles
+- TypeScript throughout
+- Jest testing
+- CORS enabled
 
-## API Endpoints
+## API
 
-### GET /api/songs
+**GET /api/songs** - Returns 10 songs with progress values
 
-Returns a list of 10 songs with current progress values.
-
-**Response:**
-
-```json
-{
-  "songs": [
-    {
-      "id": 1,
-      "name": "Flowers",
-      "author": "Miley Cyrus",
-      "progress": 0.15
-    }
-    // ... 9 more songs
-  ]
-}
-```
-
-### GET /health
-
-Health check endpoint.
-
-**Response:**
-
-```json
-{
-  "status": "OK",
-  "timestamp": "2024-01-01T00:00:00.000Z"
-}
-```
+**GET /health** - Health check
 
 ## Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
-
-# Run tests
 npm run test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Build for production
 npm run build
-
-# Start production server
 npm start
 ```
 
@@ -71,22 +31,14 @@ npm start
 
 ```
 src/
-├── types.ts          # TypeScript interfaces
-├── data.ts           # Song data and progress simulation
-├── routes/
-│   └── songs.ts      # Songs API routes
+├── types.ts
+├── data.ts
+├── progress.json
+├── routes/songs.ts
 ├── __tests__/
-│   ├── songs.test.ts # API endpoint tests
-│   └── data.test.ts  # Data function tests
-└── index.ts          # Express app setup
+└── index.ts
 ```
 
 ## Progress Simulation
 
-The progress values are simulated to show dynamic changes:
-
-- Each API call generates random progress values based on initial values
-- Progress is capped at 1.0 (100%) and rounded to 2 decimal places
-- Random increments between 0.01 and 0.05 per call
-- Server is stateless - each call generates fresh progress values
-- This simulates real-time calculation updates for the frontend polling
+Progress values are stored in `progress.json` and increment by 1-8% on each API call. When a song reaches 100%, it resets to 10-30% to simulate new processing cycles.
